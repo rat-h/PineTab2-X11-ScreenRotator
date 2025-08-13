@@ -59,6 +59,9 @@ InputDevice::InputDevice(XIDeviceInfo* info, Display *display) : display{display
       qDebug() << "Device" << info->name << "seems to be a touchscreen device";
       isTouchScreen = true;
     }
+    //DB>>
+    //qDebug() << "Device" << info->name << ":"  << info->classes[j]->type;
+    //<<DB
   }
   for(auto property: properties()) {
     if(property.isRotationMatrix())
@@ -90,10 +93,10 @@ InputProperty::InputProperty(int deviceId, Display* display, Atom atom) : device
   if(XIGetProperty(display, deviceId, atom, 0, 0, False, AnyPropertyType, &property_type, &property_format, &items_count, &bytes_after, &data) == Success) {
     type = property_type;
     format = property_format;
-    qDebug() << "Property name=" << name << ", atom=" << atom << ", format=" << format << ", type=" << type;
+    qDebug() << "   Device ID" << deviceId << "Property name=" << name << ", atom=" << atom << ", format=" << format << ", type=" << type;
     XFree(data);
   } else {
-    qDebug() << "Unable to get data for property " << name;
+    qDebug() << "   Unable to get data for property " << name;
   }
 }
 
@@ -167,13 +170,28 @@ void RotateInput::rotate(Orientation orientation)
     {LeftUp, {0, -1, 1, 1, 0, 0, 0, 0, 1}},
     {RightUp, {0, 1, 0, -1, 0, 1, 0, 0, 1}},
   };
-  auto orientation_matrix = orientation_matrix_map[orientation];
+  static QHash<Orientation, vector<float>>  tp_orientation_matrix_map {
+    {TopUp, orientation_matrix_map[LeftUp]},
+    {TopDown, orientation_matrix_map[RightUp]},
+    {LeftUp, orientation_matrix_map[TopDown]},
+    {RightUp, orientation_matrix_map[TopUp]},
+
+  };
+  auto orientation_matrix    = orientation_matrix_map[orientation];
+  auto tp_orientation_matrix = tp_orientation_matrix_map[orientation];
   qDebug() << "Setting rotation matrix: " << orientation_matrix;
+  qDebug() << "     TP rotation matrix: " << tp_orientation_matrix;
   for(auto device: d->devices) {
     for(auto property: device.properties()) {
       if(property.isRotationMatrix()) {
-        qDebug() << "Changing orientation matrix for device " << device.name << ", property " << property.name;
-        property.setRotationMatrix(orientation_matrix);
+		  if(device.name == "HID 1018:1006 Touchpad"){
+			qDebug() << "Touchpad orientation matrix for device " << device.name << ", property " << property.name;
+			property.setRotationMatrix(tp_orientation_matrix);
+		  }
+		  else {
+			qDebug() << "Changing orientation matrix for device " << device.name << ", property " << property.name;
+			property.setRotationMatrix(orientation_matrix);
+		  }
       }
     }
   }

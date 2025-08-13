@@ -29,10 +29,10 @@ public:
 OrientationSensor::OrientationSensor(QObject* parent) : QObject{parent}, d{new Private}
 {
   d->to_orientation = {
-    { QOrientationReading::TopUp, TopUp },
-    { QOrientationReading::TopDown, TopDown },
-    { QOrientationReading::RightUp, RightUp },
-    { QOrientationReading::LeftUp, LeftUp },
+    { QOrientationReading::LeftUp,  TopUp   },
+    { QOrientationReading::RightUp, TopDown },
+    { QOrientationReading::TopUp,   RightUp },
+    { QOrientationReading::TopDown, LeftUp  },
   };
   connect(&d->sensor, &QOrientationSensor::readingChanged, this, [this]{
     auto reading = d->sensor.reading();
