@@ -1,11 +1,10 @@
-# Maintainer: Marco Gulino <marco.gulino@gmail.com>
 
-pkgname=screenrotator-git
+pkgname=pinetab2-X11-screenrotator-git
 pkgver=r23.1a78a4b
 pkgrel=1
 epoch=1
-pkgdesc='Automatic screen rotation daemon for X11'
-arch=('i686' 'x86_64')
+pkgdesc='Automatic screen rotation daemon for X11 on PineTab2'
+arch=('aarch64' 'i686' 'x86_64')
 url='https://github.com/GuLinux/ScreenRotator'
 license=('GPL3')
 depends=('qt5-base' 'qt5-x11extras' 'libxi' 'libxrandr' 'qt5-sensors')
@@ -26,6 +25,7 @@ prepare() {
 build() {
     cd "$srcdir/$pkgname/build"
 	cmake ..\
+		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release
 	make
