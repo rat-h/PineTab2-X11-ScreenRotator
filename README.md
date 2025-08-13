@@ -1,10 +1,17 @@
-# Simple Qt screen rotation manager
+# This is a fork of a [Simple Qt screen rotation manager](https://github.com/GuLinux/ScreenRotator) with modifications for PineTab2
 
-Reads from accelerometer sensors, and rotate display according to the readings.
+Reads data from accelerometer sensors and rotates the display accordingly.
 
-Works only in X11 for now.
+In *PineTab2* screen and touchscreen normal position is portrait,  while for touchpad it is landscape. So whatever sensor reads, the screen and touchpad are always
+in different directions.
 
-Similar to the current solution implemented in Gnome, but works on all other desktop environments as well (KDE, XFCE, etc).
+
+
+I modified the code so that the screen, touchscreen, and touchpad work properly.
+
+
+
+Code improvement and testing are needed.
 
 ## Compilation requirements
 
@@ -24,7 +31,7 @@ sudo apt install -y git cmake build-essential qtbase5-dev libxrandr-dev libxi-de
 git clone https://github.com/GuLinux/ScreenRotator
 mkdir ScreenRotator/build
 cd ScreenRotator/build
-cmake ..
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 make all
 sudo make install
 ```
